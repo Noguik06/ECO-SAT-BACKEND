@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,14 +24,14 @@ public class JWT_Utility {
 
 
     public static JSONObject generarToken(String token) throws ParseException, JSONException {
-        Key key = MacProvider.generateKey();
+    	SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        Key key = MacProvider.generateKey(SignatureAlgorithm.HS256);
         JSONObject entry = new JSONObject(token);
         JSONObject payLoad = new JSONObject();
 
         payLoad.put("user_id",entry.getString("user_id"));
         payLoad.put("imei",entry.getString("imei"));
         payLoad.put("clientse",entry.getString("clientse"));
-        payLoad.put("password",entry.getString("password"));
 
         String userToken = Jwts.builder().setPayload(payLoad.toString()).signWith(SignatureAlgorithm.HS512, key).compact();
 
