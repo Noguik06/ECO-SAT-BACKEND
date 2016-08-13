@@ -22,7 +22,7 @@ database:
   password: admin
 
   # the JDBC URL
-  url: jdbc:postgresql://localhost:5432/headAcheExperiment
+  url: jdbc:postgresql://localhost:5432/SAT
 
   # any properties specific to your JDBC driver:
   properties:
