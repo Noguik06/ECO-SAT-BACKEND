@@ -1,4 +1,4 @@
-package com.uniandes.experimento.resources;
+package com.uniandes.core.resources;
 
 import java.io.IOException;
 import java.sql.ResultSet;

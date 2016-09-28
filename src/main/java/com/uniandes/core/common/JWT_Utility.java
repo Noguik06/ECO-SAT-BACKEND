@@ -1,4 +1,4 @@
-package com.uniandes.experimento.common;
+package com.uniandes.core.common;
 
 
 import io.jsonwebtoken.Jwt;
@@ -29,9 +29,7 @@ public class JWT_Utility {
         JSONObject entry = new JSONObject(token);
         JSONObject payLoad = new JSONObject();
 
-        payLoad.put("user_id",entry.getString("user_id"));
-        payLoad.put("imei",entry.getString("imei"));
-        payLoad.put("clientse",entry.getString("clientse"));
+        payLoad.put("user_id",entry.getString("cedula"));
 
         String userToken = Jwts.builder().setPayload(payLoad.toString()).signWith(SignatureAlgorithm.HS512, key).compact();
 

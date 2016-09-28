@@ -1,4 +1,4 @@
-package com.uniandes.experimento;
+package com.uniandes.core;
 
 
 
@@ -12,33 +12,50 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 import org.skife.jdbi.v2.DBI;
 
-import com.uniandes.experimento.resources.UploadFileServlet;
 import com.uniandes.common.Utility;
-import com.uniandes.experimento.resources.DownloadFileServlet;
-import com.uniandes.experimento.resources.EpisodeResource;
-import com.uniandes.experimento.resources.FileResource;
-import com.uniandes.experimento.resources.UserResource;
+import com.uniandes.core.resources.DownloadFileServlet;
+import com.uniandes.core.resources.EpisodeResource;
+import com.uniandes.core.resources.FileResource;
+import com.uniandes.core.resources.ProcedureResource;
+import com.uniandes.core.resources.UploadFileServlet;
+import com.uniandes.core.resources.UserResource;
+import com.uniandes.db.dao.Tbl_TramiteDAO;
+import com.uniandes.db.dao.UsuarioDAO;
+import com.uniandes.db.vo.Tbl_tramite;
+import com.uniandes.db.vo.Tbl_usuario;
 
 import io.dropwizard.Application;
+import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
 
-public class Main_Experimento extends Application<LoginConfiguration> {
+public class Main_App extends Application<LoginConfiguration> {
 
     public static void main(String[] args) throws Exception {
-        new Main_Experimento().run(args);
+        new Main_App().run(args);
     }
 
     @Override
     public String getName() {
-        return "sistemaColegioColpedagogico";
+        return "ECOS_BACKEND";
     }
 
+    
+    private final HibernateBundle<LoginConfiguration> hibernate = new HibernateBundle<LoginConfiguration>(Tbl_tramite.class) {
+        @Override
+        public DataSourceFactory getDataSourceFactory(LoginConfiguration configuration) {
+            return configuration.getDataSourceFactory();
+        }
+    };
+
+    
+    
     @Override
     public void initialize(Bootstrap<LoginConfiguration> bootstrap) {
-    	 
+    	  bootstrap.addBundle(hibernate);
     }
 
     @Override
@@ -59,12 +76,20 @@ public class Main_Experimento extends Application<LoginConfiguration> {
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
 
         Utility.dao = jdbi;
-        
-        final UserResource userResource = new UserResource(jdbi);
-        final EpisodeResource episodeResource = new EpisodeResource(jdbi);
-        final FileResource fileResource = new FileResource(jdbi);
 
         
+        
+        //Creamos los DAO que vamos a usar
+        final UsuarioDAO dao = new UsuarioDAO(hibernate.getSessionFactory());
+        final Tbl_TramiteDAO tbl_tramiteDAO = new Tbl_TramiteDAO(hibernate.getSessionFactory()) ;
+        
+        
+        final UserResource userResource = new UserResource(jdbi, dao);
+        final EpisodeResource episodeResource = new EpisodeResource(jdbi);
+        final FileResource fileResource = new FileResource(jdbi);
+        final ProcedureResource tbl_tramiteResource = new ProcedureResource(tbl_tramiteDAO);
+
+
         
         //Registramos el primero recurso
         environment.jersey().register(userResource);
@@ -72,6 +97,8 @@ public class Main_Experimento extends Application<LoginConfiguration> {
         environment.jersey().register(episodeResource);
         //Registros el tercer recurso
         environment.jersey().register(fileResource);
+        //Registramos el servicio de los tramites
+        environment.jersey().register(tbl_tramiteResource);
         //Añadimos el servlet para subir archivos
         ServletHolder fileUploadServletHolder = new ServletHolder(new UploadFileServlet());
         fileUploadServletHolder.getRegistration().setMultipartConfig(new MultipartConfigElement("data/tmp"));

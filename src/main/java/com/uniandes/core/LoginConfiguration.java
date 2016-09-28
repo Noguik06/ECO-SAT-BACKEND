@@ -1,4 +1,4 @@
-package com.uniandes.experimento;
+package com.uniandes.core;
 
 
 import javax.validation.Valid;

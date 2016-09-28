@@ -22,11 +22,13 @@ database:
   password: admin
 
   # the JDBC URL
-  url: jdbc:postgresql://localhost:5432/SAT
+  url: jdbc:postgresql://localhost:5432/SAT 
 
   # any properties specific to your JDBC driver:
   properties:
     charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+
 
   # the maximum amount of time to wait on an empty pool before throwing an exception
   maxWaitForConnection: 1s
