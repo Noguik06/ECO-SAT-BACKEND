@@ -1,6 +1,7 @@
 package com.uniandes.core.resources;
 
 import java.sql.SQLException;
+import java.util.Iterator;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -8,13 +9,18 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 import org.skife.jdbi.v2.ResultIterator;
 
+import com.uniandes.db.dao.Tbl_CampoDAO;
+import com.uniandes.db.dao.Tbl_FaseDAO;
 import com.uniandes.db.dao.Tbl_TramiteDAO;
+import com.uniandes.db.vo.Tbl_campo;
+import com.uniandes.db.vo.Tbl_fase;
 import com.uniandes.db.vo.Tbl_tramite;
 
 import io.dropwizard.hibernate.UnitOfWork;
@@ -24,9 +30,14 @@ import io.dropwizard.hibernate.UnitOfWork;
 public class ProcedureResource {
 
 	private Tbl_TramiteDAO tbl_tramiteDAO;
+	private Tbl_FaseDAO tbl_FaseDAO;
+	private Tbl_CampoDAO tbl_CampoDAO;
 
-	public ProcedureResource(Tbl_TramiteDAO tbl_tramiteDAO) {
+	public ProcedureResource(Tbl_TramiteDAO tbl_tramiteDAO, 
+			Tbl_FaseDAO tbl_FaseDAO, Tbl_CampoDAO tbl_CampoDAO) {
 		this.tbl_tramiteDAO = tbl_tramiteDAO;
+		this.tbl_FaseDAO = tbl_FaseDAO;
+		this.tbl_CampoDAO = tbl_CampoDAO;
 	}
 
 	// Servicio para registrar un procedimiento
@@ -47,30 +58,34 @@ public class ProcedureResource {
 		Long idTramite = tbl_tramiteDAO.create(tbl_tramite);
 		
 		//Creamos la fase del tramite
-		
-		
-		
-		
-//		try {
-//			String nombre = inPUT.getString("nombre");
-//			String cedula = inPUT.getString("cedula");
-//			String telefono = inPUT.getString("telefono");
-//			String email = inPUT.getString("email");
-//			String tipo = inPUT.getString("tipo");
-//			String password = inPUT.getString("password");
-//
-//			// Validamos que el usuario no haya sido creado
-//			String query = "SELECT * FROM tbl_usuario WHERE cedula = '" + cedula + "'";
-//			ResultIterator tareasIterator = h.createQuery(query).iterator();
-//			
-//		} catch (Exception e) {
-//			outPUT.put("status", "false");
-//			outPUT.put("message", "Ha ocurrido un error al insertar el usuario");
-//			String result = "" + outPUT;
-//			return Response.status(500).entity(result).build();
-//		} finally {
-//			h.close();
-//		}
+		JSONArray jsonArrayFases = tramiteJSON.getJSONArray("fases");
+		for(int i = 0; i<jsonArrayFases.length(); i ++){
+			//Sacamos la fase que vamos a crear
+			JSONObject jsonFase = (JSONObject) jsonArrayFases.get(i);
+			//Cremos el objeto fase
+			Tbl_fase  tbl_fase = new Tbl_fase();
+			tbl_fase.setOrden(jsonFase.getInt("orden"));
+			tbl_fase.setTipousuario(jsonFase.getString("tipousuario"));
+			tbl_fase.setId_tramite(idTramite);
+			//Guardamos la fase nueva
+			Long idFase = tbl_FaseDAO.create(tbl_fase);
+			
+			//Creamos los campos de la fase
+			JSONArray jsonArrayCampos = jsonFase.getJSONArray("campos");
+			for(int j = 0; j<jsonArrayCampos.length(); j ++){
+				//Obtenemos el json del campo
+				JSONObject jsonCampo = (JSONObject) jsonArrayCampos.get(j);
+				//Creamos el objeto tipo tbl_campo
+				Tbl_campo tbl_campo = new Tbl_campo();
+				tbl_campo.setNombre(jsonCampo.getString("nombre"));
+				tbl_campo.setTipo(jsonCampo.getString("tipo"));
+				tbl_campo.setOrden(jsonCampo.getInt("orden"));
+				tbl_campo.setObligatorio(jsonCampo.getBoolean("obligatorio"));
+				tbl_campo.setId_fase(idFase);
+				//Persistimos el objeto
+				Long idCampo = tbl_CampoDAO.create(tbl_campo);
+			}
+		}
 		String result = "";
 		return Response.status(200).entity(result).build();
 	}

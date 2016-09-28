@@ -19,8 +19,12 @@ import com.uniandes.core.resources.FileResource;
 import com.uniandes.core.resources.ProcedureResource;
 import com.uniandes.core.resources.UploadFileServlet;
 import com.uniandes.core.resources.UserResource;
+import com.uniandes.db.dao.Tbl_CampoDAO;
+import com.uniandes.db.dao.Tbl_FaseDAO;
 import com.uniandes.db.dao.Tbl_TramiteDAO;
 import com.uniandes.db.dao.UsuarioDAO;
+import com.uniandes.db.vo.Tbl_campo;
+import com.uniandes.db.vo.Tbl_fase;
 import com.uniandes.db.vo.Tbl_tramite;
 import com.uniandes.db.vo.Tbl_usuario;
 
@@ -44,7 +48,8 @@ public class Main_App extends Application<LoginConfiguration> {
     }
 
     
-    private final HibernateBundle<LoginConfiguration> hibernate = new HibernateBundle<LoginConfiguration>(Tbl_tramite.class) {
+    private final HibernateBundle<LoginConfiguration> hibernate = new HibernateBundle<LoginConfiguration>(Tbl_tramite.class,
+    		Tbl_fase.class, Tbl_campo.class) {
         @Override
         public DataSourceFactory getDataSourceFactory(LoginConfiguration configuration) {
             return configuration.getDataSourceFactory();
@@ -82,12 +87,15 @@ public class Main_App extends Application<LoginConfiguration> {
         //Creamos los DAO que vamos a usar
         final UsuarioDAO dao = new UsuarioDAO(hibernate.getSessionFactory());
         final Tbl_TramiteDAO tbl_tramiteDAO = new Tbl_TramiteDAO(hibernate.getSessionFactory()) ;
+        final Tbl_FaseDAO tbl_faseDAO = new Tbl_FaseDAO(hibernate.getSessionFactory()) ;
+        final Tbl_CampoDAO tbl_campoDAO = new Tbl_CampoDAO(hibernate.getSessionFactory()) ;
         
         
         final UserResource userResource = new UserResource(jdbi, dao);
         final EpisodeResource episodeResource = new EpisodeResource(jdbi);
         final FileResource fileResource = new FileResource(jdbi);
-        final ProcedureResource tbl_tramiteResource = new ProcedureResource(tbl_tramiteDAO);
+        final ProcedureResource tbl_tramiteResource = 
+        		new ProcedureResource(tbl_tramiteDAO,tbl_faseDAO,tbl_campoDAO);
 
 
         
