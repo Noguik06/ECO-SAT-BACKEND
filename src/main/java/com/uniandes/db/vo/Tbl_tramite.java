@@ -7,11 +7,18 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 
 @Entity
 @Table(name = "tbl_tramite")
+@NamedQueries(
+	    {
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_tramite.findAll", query = "SELECT T FROM Tbl_tramite T ORDER BY T.nombre")
+	    }
+	)
 public class Tbl_tramite implements Serializable{
 	
 	/**

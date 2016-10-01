@@ -1,8 +1,12 @@
 package com.uniandes.core.resources;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -87,6 +91,28 @@ public class ProcedureResource {
 			}
 		}
 		String result = "";
+		return Response.status(200).entity(result).build();
+	}
+	
+	@GET
+	@Path("getAllProcedures")
+	@UnitOfWork
+	public Response getAllProcedures() throws JSONException, SQLException {
+		
+		//Creamos el nuevo objeto
+		List<Tbl_tramite> dataListTramites = new ArrayList<Tbl_tramite>(); 
+		dataListTramites = tbl_tramiteDAO.getAllProcedures();
+		
+		//
+		List<JSONObject> dataListJSONTramite = new ArrayList<JSONObject>();
+		for(Tbl_tramite t:dataListTramites){
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("id", t.getId_tramite());
+			jsonObject.put("nombre", t.getNombre());
+			jsonObject.put("descripcion", t.getDescripcion());
+			dataListJSONTramite.add(jsonObject);
+		}
+		String result = "" + dataListJSONTramite;
 		return Response.status(200).entity(result).build();
 	}
 }
