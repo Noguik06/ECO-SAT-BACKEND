@@ -112,7 +112,9 @@ public class ProcedureResource {
 			jsonObject.put("descripcion", t.getDescripcion());
 			dataListJSONTramite.add(jsonObject);
 		}
-		String result = "" + dataListJSONTramite;
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("tramites", dataListJSONTramite);
+		String result = "" + jsonObject;
 		return Response.status(200).entity(result).build();
 	}
 }
