@@ -3,6 +3,7 @@ package com.uniandes.core.resources;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,9 +24,11 @@ import org.skife.jdbi.v2.ResultIterator;
 import com.uniandes.db.dao.Tbl_CampoDAO;
 import com.uniandes.db.dao.Tbl_FaseDAO;
 import com.uniandes.db.dao.Tbl_TramiteDAO;
+import com.uniandes.db.dao.Tbl_Tramite_UsuarioDAO;
 import com.uniandes.db.vo.Tbl_campo;
 import com.uniandes.db.vo.Tbl_fase;
 import com.uniandes.db.vo.Tbl_tramite;
+import com.uniandes.db.vo.Tbl_tramite_usuario;
 
 import io.dropwizard.hibernate.UnitOfWork;
 
@@ -36,15 +39,18 @@ public class ProcedureResource {
 	private Tbl_TramiteDAO tbl_tramiteDAO;
 	private Tbl_FaseDAO tbl_FaseDAO;
 	private Tbl_CampoDAO tbl_CampoDAO;
+	private Tbl_Tramite_UsuarioDAO tbl_Tramite_UsuarioDAO;
 
 	public ProcedureResource(Tbl_TramiteDAO tbl_tramiteDAO, 
-			Tbl_FaseDAO tbl_FaseDAO, Tbl_CampoDAO tbl_CampoDAO) {
+			Tbl_FaseDAO tbl_FaseDAO, Tbl_CampoDAO tbl_CampoDAO, 
+			Tbl_Tramite_UsuarioDAO tbl_Tramite_UsuarioDAO) {
 		this.tbl_tramiteDAO = tbl_tramiteDAO;
 		this.tbl_FaseDAO = tbl_FaseDAO;
 		this.tbl_CampoDAO = tbl_CampoDAO;
+		this.tbl_Tramite_UsuarioDAO = tbl_Tramite_UsuarioDAO;
 	}
 
-	// Servicio para registrar un procedimiento
+	// Servicio para crear un tramite
 	@POST
 	@Path("createProcedure")
 	@UnitOfWork
@@ -69,7 +75,7 @@ public class ProcedureResource {
 			//Cremos el objeto fase
 			Tbl_fase  tbl_fase = new Tbl_fase();
 			tbl_fase.setOrden(jsonFase.getInt("orden"));
-			tbl_fase.setTipousuario(jsonFase.getString("tipousuario"));
+			tbl_fase.setTipousuario(jsonFase.getInt("tipousuario"));
 			tbl_fase.setId_tramite(idTramite);
 			//Guardamos la fase nueva
 			Long idFase = tbl_FaseDAO.create(tbl_fase);
@@ -94,6 +100,8 @@ public class ProcedureResource {
 		return Response.status(200).entity(result).build();
 	}
 	
+	
+	//Servicio para mostar todos los tramites activos
 	@GET
 	@Path("getAllProcedures")
 	@UnitOfWork
@@ -117,4 +125,83 @@ public class ProcedureResource {
 		String result = "" + jsonObject;
 		return Response.status(200).entity(result).build();
 	}
+	
+	//Servicio para create una solicitud de tramite
+	@POST
+	@Path("createRequestProcedure")
+	@UnitOfWork
+	public Response createRequestProcedure(String incomingData) throws JSONException{
+		//Sacamos la informacion principal
+		JSONObject inPUT = new JSONObject(incomingData);
+		JSONObject tramiteJSON = inPUT.getJSONObject("tramite");
+		
+		//Sacamos la cedula del usuario
+		Long id_usuario = tramiteJSON.getLong("idusuario");
+		Long id_tramite = tramiteJSON.getLong("idtramite");
+	
+		//Creamos instancia del tramite ciudadano que vamos a crear
+		Tbl_tramite_usuario tramite_usuario = new Tbl_tramite_usuario();
+		//Colocamos el usuario propietario del tramite
+		tramite_usuario.setId_usuario_ciudadano(id_usuario);
+		//Colocamos el id del tramite que se crea
+		tramite_usuario.setId_tramite(id_tramite);
+		//Colocamos el estado del tramite
+		tramite_usuario.setEstadoactivo(true);
+		//Colocamos la fecha de creacion de la solicitud
+		tramite_usuario.setFecha(new Date());
+		
+		
+		//Persistimo la nueva solicitud del suario
+		Long id_tramite_usuario = tbl_Tramite_UsuarioDAO.create(tramite_usuario);
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("message", "la solicitud ha sido creada exitosamente");
+		jsonObject.put("idsolicitud", id_tramite_usuario);
+		String result = "" + jsonObject;
+		return Response.status(200).entity(result).build();
+	}
+	
+	@GET
+	@Path("getAllRequetstProcedures")
+	@UnitOfWork
+	public Response getAllRequetstProcedures() throws JSONException, SQLException {
+		//Creamos el nuevo objeto
+		List<Tbl_tramite> dataListTramites = new ArrayList<Tbl_tramite>(); 
+		dataListTramites = tbl_tramiteDAO.getAllProcedures();
+		//
+		List<JSONObject> dataListJSONTramite = new ArrayList<JSONObject>();
+		for(Tbl_tramite t:dataListTramites){
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("id", t.getId_tramite());
+			jsonObject.put("nombre", t.getNombre());
+			jsonObject.put("descripcion", t.getDescripcion());
+			dataListJSONTramite.add(jsonObject);
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("tramites", dataListJSONTramite);
+		String result = "" + jsonObject;
+		return Response.status(200).entity(result).build();
+	}
+	
+	@GET
+	@Path("getRequetstProcedureByID")
+	@UnitOfWork
+	public Response getRequetstProcedureByID() throws JSONException, SQLException {
+		//Creamos el nuevo objeto
+		List<Tbl_tramite> dataListTramites = new ArrayList<Tbl_tramite>(); 
+		dataListTramites = tbl_tramiteDAO.getAllProcedures();
+		//
+		List<JSONObject> dataListJSONTramite = new ArrayList<JSONObject>();
+		for(Tbl_tramite t:dataListTramites){
+			JSONObject jsonObject = new JSONObject();
+			jsonObject.put("id", t.getId_tramite());
+			jsonObject.put("nombre", t.getNombre());
+			jsonObject.put("descripcion", t.getDescripcion());
+			dataListJSONTramite.add(jsonObject);
+		}
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("tramites", dataListJSONTramite);
+		String result = "" + jsonObject;
+		return Response.status(200).entity(result).build();
+	}
+	
 }

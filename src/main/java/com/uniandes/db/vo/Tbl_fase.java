@@ -27,7 +27,7 @@ public class Tbl_fase implements Serializable{
 	private int orden;
 	
 	@Column(name = "tipousuario")
-	private String tipousuario;
+	private int tipousuario;
 	
 	@Column(name = "id_tramite")
 	private Long id_tramite;
@@ -48,11 +48,11 @@ public class Tbl_fase implements Serializable{
 		this.orden = orden;
 	}
 
-	public String getTipousuario() {
+	public int getTipousuario() {
 		return tipousuario;
 	}
 
-	public void setTipousuario(String tipousuario) {
+	public void setTipousuario(int tipousuario) {
 		this.tipousuario = tipousuario;
 	}
 

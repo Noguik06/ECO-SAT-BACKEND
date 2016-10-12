@@ -22,11 +22,12 @@ import com.uniandes.core.resources.UserResource;
 import com.uniandes.db.dao.Tbl_CampoDAO;
 import com.uniandes.db.dao.Tbl_FaseDAO;
 import com.uniandes.db.dao.Tbl_TramiteDAO;
+import com.uniandes.db.dao.Tbl_Tramite_UsuarioDAO;
 import com.uniandes.db.dao.UsuarioDAO;
 import com.uniandes.db.vo.Tbl_campo;
 import com.uniandes.db.vo.Tbl_fase;
 import com.uniandes.db.vo.Tbl_tramite;
-import com.uniandes.db.vo.Tbl_usuario;
+import com.uniandes.db.vo.Tbl_tramite_usuario;
 
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
@@ -49,7 +50,7 @@ public class Main_App extends Application<LoginConfiguration> {
 
     
     private final HibernateBundle<LoginConfiguration> hibernate = new HibernateBundle<LoginConfiguration>(Tbl_tramite.class,
-    		Tbl_fase.class, Tbl_campo.class) {
+    		Tbl_fase.class, Tbl_campo.class, Tbl_tramite_usuario.class) {
         @Override
         public DataSourceFactory getDataSourceFactory(LoginConfiguration configuration) {
             return configuration.getDataSourceFactory();
@@ -89,13 +90,14 @@ public class Main_App extends Application<LoginConfiguration> {
         final Tbl_TramiteDAO tbl_tramiteDAO = new Tbl_TramiteDAO(hibernate.getSessionFactory()) ;
         final Tbl_FaseDAO tbl_faseDAO = new Tbl_FaseDAO(hibernate.getSessionFactory()) ;
         final Tbl_CampoDAO tbl_campoDAO = new Tbl_CampoDAO(hibernate.getSessionFactory()) ;
+        final Tbl_Tramite_UsuarioDAO tbl_Tramite_UsuarioDAO = new Tbl_Tramite_UsuarioDAO(hibernate.getSessionFactory()) ;
         
         
         final UserResource userResource = new UserResource(jdbi, dao);
         final EpisodeResource episodeResource = new EpisodeResource(jdbi);
         final FileResource fileResource = new FileResource(jdbi);
         final ProcedureResource tbl_tramiteResource = 
-        		new ProcedureResource(tbl_tramiteDAO,tbl_faseDAO,tbl_campoDAO);
+        		new ProcedureResource(tbl_tramiteDAO,tbl_faseDAO,tbl_campoDAO, tbl_Tramite_UsuarioDAO);
 
 
         

@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "tbl_tramite")
 @NamedQueries(
 	    {
-	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_tramite.findAll", query = "SELECT T FROM Tbl_tramite T ORDER BY T.nombre")
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_tramite.findAll", query = "SELECT T FROM Tbl_tramite T WHERE T.estado <> 2 ORDER BY T.nombre")
 	    }
 	)
 public class Tbl_tramite implements Serializable{
@@ -35,6 +35,9 @@ public class Tbl_tramite implements Serializable{
 	
 	@Column(name = "descripcion")
 	private String descripcion;
+	
+	@Column(name = "estado")
+	private int estado;
 	
 	public String getNombre() {
 		return nombre;
@@ -58,5 +61,13 @@ public class Tbl_tramite implements Serializable{
 
 	public void setId_tramite(Long id_tramite) {
 		this.id_tramite = id_tramite;
+	}
+
+	public int getEstado() {
+		return estado;
+	}
+
+	public void setEstado(int estado) {
+		this.estado = estado;
 	}
 }
