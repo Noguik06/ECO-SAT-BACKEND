@@ -7,11 +7,18 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 
 @Entity
 @Table(name = "tbl_fase")
+@NamedQueries(
+	    {
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_fase.findAll", query = "SELECT T FROM Tbl_fase T WHERE T.estado <> 1 ORDER BY T.orden")
+	    }
+	)
 public class Tbl_fase implements Serializable{
 	
 	/**
@@ -31,6 +38,9 @@ public class Tbl_fase implements Serializable{
 	
 	@Column(name = "id_tramite")
 	private Long id_tramite;
+	
+	@Column(name = "estadotramite")
+	private int estadotramite;
 
 	public Long getId_fase() {
 		return id_fase;
@@ -62,5 +72,13 @@ public class Tbl_fase implements Serializable{
 
 	public void setId_tramite(Long id_tramite) {
 		this.id_tramite = id_tramite;
+	}
+
+	public int getEstadotramite() {
+		return estadotramite;
+	}
+
+	public void setEstadotramite(int estadotramite) {
+		this.estadotramite = estadotramite;
 	}
 }

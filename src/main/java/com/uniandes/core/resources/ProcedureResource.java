@@ -22,11 +22,15 @@ import org.skife.jdbi.v2.Handle;
 import org.skife.jdbi.v2.ResultIterator;
 
 import com.uniandes.db.dao.Tbl_CampoDAO;
+import com.uniandes.db.dao.Tbl_Campo_UsuarioDAO;
 import com.uniandes.db.dao.Tbl_FaseDAO;
+import com.uniandes.db.dao.Tbl_Fase_UsuarioDAO;
 import com.uniandes.db.dao.Tbl_TramiteDAO;
 import com.uniandes.db.dao.Tbl_Tramite_UsuarioDAO;
 import com.uniandes.db.vo.Tbl_campo;
+import com.uniandes.db.vo.Tbl_campo_usuario;
 import com.uniandes.db.vo.Tbl_fase;
+import com.uniandes.db.vo.Tbl_fase_usuario;
 import com.uniandes.db.vo.Tbl_tramite;
 import com.uniandes.db.vo.Tbl_tramite_usuario;
 
@@ -40,14 +44,21 @@ public class ProcedureResource {
 	private Tbl_FaseDAO tbl_FaseDAO;
 	private Tbl_CampoDAO tbl_CampoDAO;
 	private Tbl_Tramite_UsuarioDAO tbl_Tramite_UsuarioDAO;
+	private Tbl_Fase_UsuarioDAO tbl_Fase_UsuarioDAO;
+	private Tbl_Campo_UsuarioDAO tbl_Campo_UsuarioDAO;
 
 	public ProcedureResource(Tbl_TramiteDAO tbl_tramiteDAO, 
-			Tbl_FaseDAO tbl_FaseDAO, Tbl_CampoDAO tbl_CampoDAO, 
-			Tbl_Tramite_UsuarioDAO tbl_Tramite_UsuarioDAO) {
+			Tbl_FaseDAO tbl_FaseDAO, 
+			Tbl_CampoDAO tbl_CampoDAO, 
+			Tbl_Tramite_UsuarioDAO tbl_Tramite_UsuarioDAO,
+			Tbl_Fase_UsuarioDAO tbl_Fase_UsuarioDAO,
+			Tbl_Campo_UsuarioDAO tbl_Campo_UsuarioDAO) {
 		this.tbl_tramiteDAO = tbl_tramiteDAO;
 		this.tbl_FaseDAO = tbl_FaseDAO;
 		this.tbl_CampoDAO = tbl_CampoDAO;
 		this.tbl_Tramite_UsuarioDAO = tbl_Tramite_UsuarioDAO;
+		this.tbl_Fase_UsuarioDAO = tbl_Fase_UsuarioDAO;
+		this.tbl_Campo_UsuarioDAO = tbl_Campo_UsuarioDAO;
 	}
 
 	// Servicio para crear un tramite
@@ -94,6 +105,8 @@ public class ProcedureResource {
 				tbl_campo.setId_fase(idFase);
 				//Persistimos el objeto
 				Long idCampo = tbl_CampoDAO.create(tbl_campo);
+				
+				
 			}
 		}
 		String result = "";
@@ -138,6 +151,8 @@ public class ProcedureResource {
 		//Sacamos la cedula del usuario
 		Long id_usuario = tramiteJSON.getLong("idusuario");
 		Long id_tramite = tramiteJSON.getLong("idtramite");
+		
+		//Consultamos si existe el tramite
 	
 		//Creamos instancia del tramite ciudadano que vamos a crear
 		Tbl_tramite_usuario tramite_usuario = new Tbl_tramite_usuario();
@@ -149,10 +164,33 @@ public class ProcedureResource {
 		tramite_usuario.setEstadoactivo(true);
 		//Colocamos la fecha de creacion de la solicitud
 		tramite_usuario.setFecha(new Date());
-		
-		
 		//Persistimo la nueva solicitud del suario
 		Long id_tramite_usuario = tbl_Tramite_UsuarioDAO.create(tramite_usuario);
+		
+		//Buscamos todas las fases de un tramite
+		List<Tbl_fase> dataListTbl_fase = tbl_FaseDAO.getAllFases();
+		//Recorremos la lista para empezar a crear las fases de cada usuario
+		Iterator<Tbl_fase> iterator = dataListTbl_fase.iterator();
+		while(iterator.hasNext()){
+			Tbl_fase fase = iterator.next();
+			Tbl_fase_usuario fase_usuario = new Tbl_fase_usuario();
+			fase_usuario.setId_tramite_usuario(id_tramite_usuario);
+			fase_usuario.setId_fase(fase.getId_fase());
+			//Persistimos el objeto fase
+			Long id_fase_usuario = tbl_Fase_UsuarioDAO.create(fase_usuario);
+			//Sacamos los campos que corresponden a esta fase
+			List<Tbl_campo> datListTblCampo =  tbl_CampoDAO.getAllCamposByFase(fase.getId_fase());
+			Iterator<Tbl_campo> iteratorFases = datListTblCampo.iterator();
+			while(iteratorFases.hasNext()){
+				Tbl_campo campo = iteratorFases.next();
+				Tbl_campo_usuario campo_usuario = new Tbl_campo_usuario();
+				campo_usuario.setId_campo(campo.getId_campo());
+				campo_usuario.setId_fase_usuario(id_fase_usuario);
+				//Persistimos el objeto campo usuario
+				tbl_Campo_UsuarioDAO.create(campo_usuario);
+			}
+		}
+		
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("message", "la solicitud ha sido creada exitosamente");
 		jsonObject.put("idsolicitud", id_tramite_usuario);

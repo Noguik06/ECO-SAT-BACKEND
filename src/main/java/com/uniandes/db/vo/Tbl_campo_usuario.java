@@ -9,12 +9,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 
 @Cacheable(false)
 @Entity
 @Table(name = "tbl_campo_usuario")
+@NamedQueries(
+	    {
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_campo_usuario.findAll", query = "SELECT T FROM Tbl_campo_usuario T "
+	    			+ "WHERE T.id_fase_usuario = : id_fase_usuario")
+	    }
+	)
 public class Tbl_campo_usuario implements Serializable{
 	
 	/**
