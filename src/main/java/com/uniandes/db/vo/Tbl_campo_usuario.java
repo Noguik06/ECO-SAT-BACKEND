@@ -1,6 +1,5 @@
 package com.uniandes.db.vo;
 import java.io.Serializable;
-import java.util.Objects;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
@@ -13,18 +12,19 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 
 @Cacheable(false)
 @Entity
 @Table(name = "tbl_campo_usuario")
 @NamedQueries(
 	    {
-	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_campo_usuario.findAll", query = "SELECT T FROM Tbl_campo_usuario T "
-	    			+ "WHERE T.id_fase_usuario = : id_fase_usuario")
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_campo_usuario.findAllByFaseUsuario", query = "SELECT T FROM Tbl_campo_usuario T "
+	    			+ "WHERE T.id_fase_usuario =:id_fase_usuario")
 	    }
 	)
 public class Tbl_campo_usuario implements Serializable{
-	
 	/**
 	 * 
 	 */
@@ -47,8 +47,13 @@ public class Tbl_campo_usuario implements Serializable{
 	
 	@Lob
     @Column(name = "valorarchivo")
+	@Type(type="Byte[]")
     private byte[] valorarchivo;
 
+	public Tbl_campo_usuario(){
+//		super()
+	}
+	
 	public Long getId_campo_usuario() {
 		return id_campo_usuario;
 	}
@@ -81,6 +86,7 @@ public class Tbl_campo_usuario implements Serializable{
 		this.valortexto = valortexto;
 	}
 
+	@Column(name="valorarchivo",columnDefinition="BLOB")
 	public byte[] getValorarchivo() {
 		return valorarchivo;
 	}

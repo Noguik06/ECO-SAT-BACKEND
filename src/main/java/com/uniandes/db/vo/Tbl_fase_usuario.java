@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @NamedQueries(
 	    {
 	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_fase_usuario.findAll", query = "SELECT T FROM Tbl_fase_usuario T "
-	    			+ "WHERE T.id_tramite_usuario = : id_tramite_usuario")
+	    			+ "WHERE T.id_tramite_usuario =:id_tramite_usuario")
 	    }
 	)
 public class Tbl_fase_usuario implements Serializable{

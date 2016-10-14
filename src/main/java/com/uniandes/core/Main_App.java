@@ -29,6 +29,7 @@ import com.uniandes.db.dao.UsuarioDAO;
 import com.uniandes.db.vo.Tbl_campo;
 import com.uniandes.db.vo.Tbl_campo_usuario;
 import com.uniandes.db.vo.Tbl_fase;
+import com.uniandes.db.vo.Tbl_fase_usuario;
 import com.uniandes.db.vo.Tbl_tramite;
 import com.uniandes.db.vo.Tbl_tramite_usuario;
 
@@ -57,6 +58,7 @@ public class Main_App extends Application<LoginConfiguration> {
     		Tbl_fase.class, 
     		Tbl_campo.class, 
     		Tbl_tramite_usuario.class,
+    		Tbl_fase_usuario.class,
     		Tbl_campo_usuario.class) {
         @Override
         public DataSourceFactory getDataSourceFactory(LoginConfiguration configuration) {

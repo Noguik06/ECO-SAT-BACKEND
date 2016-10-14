@@ -23,7 +23,10 @@ public class Tbl_FaseDAO extends AbstractDAO<Tbl_fase> {
 	}
 	
 	
-	public List<Tbl_fase> getAllFases(){
-		return ((List<Tbl_fase>) currentSession().getNamedQuery("com.uniandes.db.vo.Tbl_fase.findAll").list());
+	public List<Tbl_fase> getAllFasesByTramite(Long idtramite){
+		return ((List<Tbl_fase>) currentSession()
+				.getNamedQuery("com.uniandes.db.vo.Tbl_fase.findAllByTrammite")
+				.setParameter("idtramite", idtramite)
+				.list());
 	}
 }

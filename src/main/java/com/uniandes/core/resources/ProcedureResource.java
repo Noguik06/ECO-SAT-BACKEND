@@ -168,7 +168,7 @@ public class ProcedureResource {
 		Long id_tramite_usuario = tbl_Tramite_UsuarioDAO.create(tramite_usuario);
 		
 		//Buscamos todas las fases de un tramite
-		List<Tbl_fase> dataListTbl_fase = tbl_FaseDAO.getAllFases();
+		List<Tbl_fase> dataListTbl_fase = tbl_FaseDAO.getAllFasesByTramite(id_tramite);
 		//Recorremos la lista para empezar a crear las fases de cada usuario
 		Iterator<Tbl_fase> iterator = dataListTbl_fase.iterator();
 		while(iterator.hasNext()){

@@ -16,7 +16,10 @@ import javax.persistence.Table;
 @Table(name = "tbl_fase")
 @NamedQueries(
 	    {
-	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_fase.findAll", query = "SELECT T FROM Tbl_fase T WHERE T.estado <> 1 ORDER BY T.orden")
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_fase.findAllByTrammite", query = "SELECT T FROM Tbl_fase T WHERE "
+	    			+ "T.estado <> 1 "
+	    			+ "AND T.id_tramite =:idtramite "
+	    			+ "ORDER BY T.orden")
 	    }
 	)
 public class Tbl_fase implements Serializable{
@@ -39,8 +42,8 @@ public class Tbl_fase implements Serializable{
 	@Column(name = "id_tramite")
 	private Long id_tramite;
 	
-	@Column(name = "estadotramite")
-	private int estadotramite;
+	@Column(name = "estado")
+	private int estado;
 
 	public Long getId_fase() {
 		return id_fase;
@@ -74,11 +77,12 @@ public class Tbl_fase implements Serializable{
 		this.id_tramite = id_tramite;
 	}
 
-	public int getEstadotramite() {
-		return estadotramite;
+	public int getEstado() {
+		return estado;
 	}
 
-	public void setEstadotramite(int estadotramite) {
-		this.estadotramite = estadotramite;
+	public void setEstado(int estado) {
+		this.estado = estado;
 	}
+	
 }

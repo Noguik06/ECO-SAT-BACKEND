@@ -27,7 +27,7 @@ public class Tbl_CampoDAO extends AbstractDAO<Tbl_campo> {
 	@SuppressWarnings("unchecked")
 	public List<Tbl_campo> getAllCamposByFase(Long id_fase){
 		List<Tbl_campo> list = (List<Tbl_campo>) currentSession().
-				getNamedQuery("com.uniandes.db.vo.Tbl_campo.findAll")
+				getNamedQuery("com.uniandes.db.vo.Tbl_campo.findAllByFase")
 				.setParameter("id_fase", id_fase).list();
 		return list;
 	}
