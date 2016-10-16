@@ -65,7 +65,8 @@ public class ProcedureResource {
 	@POST
 	@Path("createProcedure")
 	@UnitOfWork
-	public Response createProcedure(String incomingData) throws JSONException, SQLException {
+	public Response createProcedure(String incomingData) throws JSONException{
+		try{
 		// Json de entrada
 		JSONObject inPUT = new JSONObject(incomingData);
 		JSONObject tramiteJSON = inPUT.getJSONObject("tramites");
@@ -78,39 +79,73 @@ public class ProcedureResource {
 		//Creamos el nuevo objeto
 		Long idTramite = tbl_tramiteDAO.create(tbl_tramite);
 		
-		//Creamos la fase del tramite
-		JSONArray jsonArrayFases = tramiteJSON.getJSONArray("fases");
-		for(int i = 0; i<jsonArrayFases.length(); i ++){
-			//Sacamos la fase que vamos a crear
-			JSONObject jsonFase = (JSONObject) jsonArrayFases.get(i);
-			//Cremos el objeto fase
-			Tbl_fase  tbl_fase = new Tbl_fase();
-			tbl_fase.setOrden(jsonFase.getInt("orden"));
-			tbl_fase.setTipousuario(jsonFase.getInt("tipousuario"));
-			tbl_fase.setId_tramite(idTramite);
-			//Guardamos la fase nueva
-			Long idFase = tbl_FaseDAO.create(tbl_fase);
-			
-			//Creamos los campos de la fase
-			JSONArray jsonArrayCampos = jsonFase.getJSONArray("campos");
-			for(int j = 0; j<jsonArrayCampos.length(); j ++){
-				//Obtenemos el json del campo
-				JSONObject jsonCampo = (JSONObject) jsonArrayCampos.get(j);
-				//Creamos el objeto tipo tbl_campo
-				Tbl_campo tbl_campo = new Tbl_campo();
-				tbl_campo.setNombre(jsonCampo.getString("nombre"));
-				tbl_campo.setTipo(jsonCampo.getString("tipo"));
-				tbl_campo.setOrden(jsonCampo.getInt("orden"));
-				tbl_campo.setObligatorio(jsonCampo.getBoolean("obligatorio"));
-				tbl_campo.setId_fase(idFase);
-				//Persistimos el objeto
-				Long idCampo = tbl_CampoDAO.create(tbl_campo);
-				
-				
-			}
+		//Sacamos los campos del trámite
+		JSONArray jsonArrayCampos = tramiteJSON.getJSONArray("campos");
+		
+		//Creamos la fase asociada al tramite
+		Tbl_fase  tbl_fase = new Tbl_fase();
+		tbl_fase.setOrden(0);
+		tbl_fase.setTipousuario(0);
+		tbl_fase.setId_tramite(idTramite);
+		//Guardamos la fase nueva
+		Long idFase = tbl_FaseDAO.create(tbl_fase);
+		
+		//Recorremos el array de los campos
+		for(int i = 0; i<jsonArrayCampos.length(); i ++){
+			//Obtenemos el json del campo
+			JSONObject jsonCampo = (JSONObject) jsonArrayCampos.get(i);
+			//Creamos el objeto tipo tbl_campo
+			Tbl_campo tbl_campo = new Tbl_campo();
+			tbl_campo.setNombre(jsonCampo.getString("nombre"));
+			tbl_campo.setTipo(jsonCampo.getString("tipo"));
+			tbl_campo.setOrden(0);
+			tbl_campo.setObligatorio(true);
+			tbl_campo.setId_fase(idFase);
+			//Persistimos el objeto
+			Long idCampo = tbl_CampoDAO.create(tbl_campo);
 		}
-		String result = "";
-		return Response.status(200).entity(result).build();
+		
+//		//Creamos la fase del tramite
+//		JSONArray jsonArrayFases = tramiteJSON.getJSONArray("fases");
+//		for(int i = 0; i<jsonArrayFases.length(); i ++){
+//			//Sacamos la fase que vamos a crear
+//			JSONObject jsonFase = (JSONObject) jsonArrayFases.get(i);
+//			//Cremos el objeto fase
+//			Tbl_fase  tbl_fase = new Tbl_fase();
+//			tbl_fase.setOrden(jsonFase.getInt("orden"));
+//			tbl_fase.setTipousuario(jsonFase.getInt("tipousuario"));
+//			tbl_fase.setId_tramite(idTramite);
+//			//Guardamos la fase nueva
+//			Long idFase = tbl_FaseDAO.create(tbl_fase);
+//			
+//			//Creamos los campos de la fase
+//			JSONArray jsonArrayCampos = jsonFase.getJSONArray("campos");
+//			for(int j = 0; j<jsonArrayCampos.length(); j ++){
+//				//Obtenemos el json del campo
+//				JSONObject jsonCampo = (JSONObject) jsonArrayCampos.get(j);
+//				//Creamos el objeto tipo tbl_campo
+//				Tbl_campo tbl_campo = new Tbl_campo();
+//				tbl_campo.setNombre(jsonCampo.getString("nombre"));
+//				tbl_campo.setTipo(jsonCampo.getString("tipo"));
+//				tbl_campo.setOrden(jsonCampo.getInt("orden"));
+//				tbl_campo.setObligatorio(jsonCampo.getBoolean("obligatorio"));
+//				tbl_campo.setId_fase(idFase);
+//				//Persistimos el objeto
+//				Long idCampo = tbl_CampoDAO.create(tbl_campo);
+//				
+//				
+//			}
+//		}
+			JSONObject outPUT = new JSONObject();
+			outPUT.put("message","El tramite ha sido creado exitosamente");
+			String result = "" + outPUT;
+			return Response.status(200).entity(result).build();
+		}catch(Exception e){
+			JSONObject outPUT = new JSONObject();
+			outPUT.put("message","Ha ocurrido un error en la creación del trámite");
+			String result = "Error";
+			return Response.status(500).entity(result).build();
+		}
 	}
 	
 	
