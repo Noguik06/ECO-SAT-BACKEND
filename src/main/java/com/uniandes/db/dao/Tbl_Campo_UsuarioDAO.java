@@ -36,6 +36,11 @@ public class Tbl_Campo_UsuarioDAO extends AbstractDAO<Tbl_campo_usuario> {
 		return get(id);
 	}
 	
+	//Metodo para actualizar un valor de un campo
+	public void update(Tbl_campo_usuario campo_usuario){
+		currentSession().update(campo_usuario);
+	}
+	
 	//Metodo para traer todas los campos del usuario por el id_tramite_usuario
 	public List<Tbl_campo_usuario> getAllCamposUsuarioByIdTramite(Long id_tramite_usuario){
 		List<Tbl_campo_usuario> list = (List<Tbl_campo_usuario>) currentSession().

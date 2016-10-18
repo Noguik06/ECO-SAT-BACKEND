@@ -300,27 +300,43 @@ public class ProcedureResource {
 	public Response fillRequestProcedure(String incomingData) throws JSONException, SQLException {
 		//Sacamos la informacion principal
 		JSONObject inPUT = new JSONObject(incomingData);
+		//Sacamos la lista de campos a colocar valor
 		JSONArray jsonArrayCampos = inPUT.getJSONArray("campos");
-//		for(int i=0; i<jsonArrayCampos.length(); i++){
-//			JSONCampo
-//			Tbl_campo_usuario campo_usuario = tbl_Campo_UsuarioDAO.finById(id)
-//		}
-//		
-//		
-//		
-//		//Creamos el nuevo objeto
-//		List<Tbl_campo_usuario> dataListTramites = new ArrayList<Tbl_campo_usuario>(); 
-//		dataListTramites = tbl_tramiteDAO.getAllProcedures();
-//		//
-//		List<JSONObject> dataListJSONTramite = new ArrayList<JSONObject>();
-//		for(Tbl_tramite t:dataListTramites){
-//			JSONObject jsonObject = new JSONObject();
-//			jsonObject.put("id", t.getId_tramite());
-//			jsonObject.put("nombre", t.getNombre());
-//			jsonObject.put("descripcion", t.getDescripcion());
-//			dataListJSONTramite.add(jsonObject);
-//		}
-		return null;
+		//Creamos la lista de campos que se actualizaron con el estado
+		JSONArray camposActualizados = new JSONArray();
+		//Creamos el objeto de salida
+		JSONObject output = new JSONObject();
+		//Variable para llevar la cuenta de cuantos campos se actualizaron
+		int contadoCamposActualizados = 0;
+		
+		for(int i=0; i<jsonArrayCampos.length(); i++){
+			//Sacamos la lista de campos
+			JSONObject JSONCampo = jsonArrayCampos.getJSONObject(i);
+			//Creamos el objeto de respuesta de las actualizaciones que se hicieron
+			JSONObject campoActualizado = new JSONObject();
+			campoActualizado.put("id",JSONCampo.getLong("idcampo"));
+			try{
+				//Traemos de base de datos el objeto campo_usuario
+				Tbl_campo_usuario campo_usuario = 
+						tbl_Campo_UsuarioDAO.finById(JSONCampo.getLong("idcampo"));
+				//Colocamos el valor
+				if(campo_usuario.getTipo().equals("texto")){
+						campo_usuario.setValortexto(JSONCampo.getString("valor"));
+						tbl_Campo_UsuarioDAO.update(campo_usuario);
+				}else{
+				}
+				campoActualizado.put("estado","true");
+				contadoCamposActualizados ++;
+			}catch(Exception e){
+				campoActualizado.put("estado","false");
+			}
+			camposActualizados.put(campoActualizado);
+		}
+		output.put("message", "Se ha actualizaron " +  contadoCamposActualizados + 
+				" campo(s) de " + jsonArrayCampos.length());
+		output.put("valores",camposActualizados);
+		String result = "" + output;
+		return Response.status(200).entity(result).build();
 	}
 	
 }
