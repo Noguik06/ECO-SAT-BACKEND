@@ -23,4 +23,10 @@ public class Tbl_Tramite_UsuarioDAO extends AbstractDAO<Tbl_tramite_usuario> {
 		currentSession().persist(tbl_tramite_usuario);
 		return persist(tbl_tramite_usuario).getId_tramite_usuario();
 	}
+	
+	//Metodo para traer un objeto tipo tbl_tramite_usuario
+	public Tbl_tramite_usuario findById(Long idTramiteUsuario){
+		return get(idTramiteUsuario);
+	}
+	
 }

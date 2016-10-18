@@ -21,7 +21,9 @@ import org.hibernate.annotations.Type;
 @NamedQueries(
 	    {
 	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_campo_usuario.findAllByFaseUsuario", query = "SELECT T FROM Tbl_campo_usuario T "
-	    			+ "WHERE T.id_fase_usuario =:id_fase_usuario")
+	    			+ "WHERE T.id_fase_usuario =:id_fase_usuario"),
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_campo_usuario.findAllByIdTramiteUsuario", query = "SELECT T FROM Tbl_campo_usuario T "
+	    			+ "WHERE T.id_tramite_usuario =:id_tramite_usuario")
 	    }
 	)
 public class Tbl_campo_usuario implements Serializable{
@@ -45,10 +47,19 @@ public class Tbl_campo_usuario implements Serializable{
 	@Column(name = "valortexto")
 	private String valortexto;
 	
+	@Column(name = "nombre")
+	private String nombre;
+	
 	@Lob
     @Column(name = "valorarchivo")
 	@Type(type="Byte[]")
     private byte[] valorarchivo;
+
+	@Column(name="id_tramite_usuario")
+	private Long id_tramite_usuario;
+	
+	@Column(name = "tipo")
+	private String tipo;
 
 	public Tbl_campo_usuario(){
 //		super()
@@ -95,4 +106,27 @@ public class Tbl_campo_usuario implements Serializable{
 		this.valorarchivo = valorarchivo;
 	}
 
+	public Long getId_tramite_usuario() {
+		return id_tramite_usuario;
+	}
+
+	public void setId_tramite_usuario(Long id_tramite_usuario) {
+		this.id_tramite_usuario = id_tramite_usuario;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getTipo() {
+		return tipo;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
 }

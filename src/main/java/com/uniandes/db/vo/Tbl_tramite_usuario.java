@@ -48,6 +48,11 @@ public class Tbl_tramite_usuario implements Serializable{
     @Temporal(TemporalType.TIMESTAMP)
     private Date fecha;
 	
+	@Column(name="nombre")
+	private String nombre;
+	
+	@Column(name="descripcion")
+	private String descripcion;
 	
 
 	public Long getId_tramite_usuario() {
@@ -96,5 +101,21 @@ public class Tbl_tramite_usuario implements Serializable{
 
 	public void setFecha(Date fecha) {
 		this.fecha = fecha;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getDescripcion() {
+		return descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
 	}
 }

@@ -30,4 +30,17 @@ public class Tbl_Campo_UsuarioDAO extends AbstractDAO<Tbl_campo_usuario> {
 				.setParameter("id_fase_usuario", id_fase_usuario).list();
 		return list;
 	}
+	
+	//Metodo para traer un objeto
+	public Tbl_campo_usuario finById(Long id){
+		return get(id);
+	}
+	
+	//Metodo para traer todas los campos del usuario por el id_tramite_usuario
+	public List<Tbl_campo_usuario> getAllCamposUsuarioByIdTramite(Long id_tramite_usuario){
+		List<Tbl_campo_usuario> list = (List<Tbl_campo_usuario>) currentSession().
+				getNamedQuery("com.uniandes.db.vo.Tbl_campo_usuario.findAllByIdTramiteUsuario")
+				.setParameter("id_tramite_usuario", id_tramite_usuario).list();
+		return list;
+	}
 }

@@ -48,6 +48,10 @@ public class Tbl_campo implements Serializable{
 	
 	@Column(name = "id_fase")
 	private Long id_fase;
+	
+	@Column(name = "id_tramite")
+	private Long id_tramite;
+	
 
 	public Long getId_campo() {
 		return id_campo;
@@ -105,4 +109,11 @@ public class Tbl_campo implements Serializable{
 		this.id_fase = id_fase;
 	}
 
+	public Long getId_tramite() {
+		return id_tramite;
+	}
+
+	public void setId_tramite(Long id_tramite) {
+		this.id_tramite = id_tramite;
+	}
 }

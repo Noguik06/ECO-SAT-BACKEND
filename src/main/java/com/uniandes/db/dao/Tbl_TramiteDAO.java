@@ -26,4 +26,9 @@ public class Tbl_TramiteDAO extends AbstractDAO<Tbl_tramite> {
 	public List<Tbl_tramite> getAllProcedures(){
 		return ((List<Tbl_tramite>) currentSession().getNamedQuery("com.uniandes.db.vo.Tbl_tramite.findAll").list());
 	}
+	
+	//traemos el tramite por el id del tramitre
+	public Tbl_tramite finBydId(Long idtramite){
+		return get(idtramite);
+	}
 }
