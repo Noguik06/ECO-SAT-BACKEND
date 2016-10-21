@@ -519,14 +519,14 @@ public class UserResource {
 
 				Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
 					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication("noguik@gmail.com", "nejiydzaapwfrhkt");
+						return new PasswordAuthentication("ecossatarchidroids@gmail.com", "zmmuosulvommzqrt");
 					}
 				});
 
 				try {
 
 					Message message = new MimeMessage(session);
-					message.setFrom(new InternetAddress("juanfnoguera06@gmail.com"));
+					message.setFrom(new InternetAddress("ecossatarchidroids@gmail.com"));
 					message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
 					message.setSubject("Inscripcion en SAD");
 					message.setText("Bienvenido," + "\n\n Es un gusto tenerlo en el nuevo sistema de Automatizacion!");
@@ -565,9 +565,6 @@ public class UserResource {
 			Handle h = generalDAO.open();
 			try {
 				// TODO Auto-generated method stub
-				final String username = "juanfnoguera06@gmail.com";
-				final String password = "!)juanito@#$e123";
-
 				Properties props = new Properties();
 				props.put("mail.smtp.host", "smtp.gmail.com");
 				props.put("mail.smtp.socketFactory.port", "465");
@@ -577,14 +574,15 @@ public class UserResource {
 
 				Session session = Session.getDefaultInstance(props, new javax.mail.Authenticator() {
 					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication("juanfnoguera06@gmail.com", "!)juanito@#$e123");
+						return new PasswordAuthentication("ecossatarchidroids@gmail.com"
+								, "ucnhyfvygpfkqbsi");
 					}
 				});
 
 				try {
 
 					Message message = new MimeMessage(session);
-					message.setFrom(new InternetAddress("juanfnoguera06@gmail.com"));
+					message.setFrom(new InternetAddress("ecossatarchidroids@gmail.com"));
 					message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
 					message.setSubject("Inscripcion en SAD");
 					message.setText("Su password ha sido actualizado," + "\n\n Ahora es el siguiente: " + clave);
