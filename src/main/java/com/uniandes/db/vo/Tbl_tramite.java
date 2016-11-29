@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "tbl_tramite")
 @NamedQueries(
 	    {
-	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_tramite.findAll", query = "SELECT T FROM Tbl_tramite T WHERE T.estado <> 2 ORDER BY T.nombre")
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_tramite.findAll", query = "SELECT T FROM Tbl_tramite T WHERE T.estado = 1 ORDER BY T.nombre")
 	    }
 	)
 public class Tbl_tramite implements Serializable{

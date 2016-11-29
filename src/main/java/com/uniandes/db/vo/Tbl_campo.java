@@ -16,8 +16,10 @@ import javax.persistence.Table;
 @Table(name = "tbl_campo")
 @NamedQueries(
 	    {
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_campo.findAllByID", query = "SELECT T FROM Tbl_campo T "
+	    			+ "WHERE T.id_tramite =:id_tramite AND T.estado = true"),
 	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_campo.findAllByFase", query = "SELECT T FROM Tbl_campo T "
-	    			+ "WHERE T.id_fase =:id_fase")
+	    			+ "WHERE T.id_fase =:id_fase AND T.estado = true")
 	    }
 	)
 public class Tbl_campo implements Serializable{
@@ -51,6 +53,9 @@ public class Tbl_campo implements Serializable{
 	
 	@Column(name = "id_tramite")
 	private Long id_tramite;
+	
+	@Column(name = "estado")
+	private boolean estado;
 	
 
 	public Long getId_campo() {
@@ -115,5 +120,13 @@ public class Tbl_campo implements Serializable{
 
 	public void setId_tramite(Long id_tramite) {
 		this.id_tramite = id_tramite;
+	}
+
+	public boolean isEstado() {
+		return estado;
+	}
+
+	public void setEstado(boolean estado) {
+		this.estado = estado;
 	}
 }

@@ -32,6 +32,7 @@ import com.uniandes.db.vo.Tbl_fase;
 import com.uniandes.db.vo.Tbl_fase_usuario;
 import com.uniandes.db.vo.Tbl_tramite;
 import com.uniandes.db.vo.Tbl_tramite_usuario;
+import com.uniandes.db.vo.Tbl_usuario;
 
 import io.dropwizard.Application;
 import io.dropwizard.db.DataSourceFactory;
@@ -59,7 +60,8 @@ public class Main_App extends Application<LoginConfiguration> {
     		Tbl_campo.class, 
     		Tbl_tramite_usuario.class,
     		Tbl_fase_usuario.class,
-    		Tbl_campo_usuario.class) {
+    		Tbl_campo_usuario.class,
+    		Tbl_usuario.class) {
         @Override
         public DataSourceFactory getDataSourceFactory(LoginConfiguration configuration) {
             return configuration.getDataSourceFactory();
@@ -90,7 +92,7 @@ public class Main_App extends Application<LoginConfiguration> {
         final DBIFactory factory = new DBIFactory();
         final DBI jdbi = factory.build(environment, configuration.getDataSourceFactory(), "postgresql");
 
-        Utility.dao = jdbi;
+        
 
         
         
@@ -104,7 +106,10 @@ public class Main_App extends Application<LoginConfiguration> {
         final Tbl_Campo_UsuarioDAO tbl_Campo_UsuarioDAO = new Tbl_Campo_UsuarioDAO(hibernate.getSessionFactory()) ;
         
         
-        final UserResource userResource = new UserResource(jdbi, dao);
+        final UserResource userResource = new UserResource(
+        				jdbi, 
+        				dao, 
+        				tbl_Tramite_UsuarioDAO);
         final EpisodeResource episodeResource = new EpisodeResource(jdbi);
         final FileResource fileResource = new FileResource(jdbi);
         final ProcedureResource tbl_tramiteResource = 
@@ -114,9 +119,11 @@ public class Main_App extends Application<LoginConfiguration> {
         				tbl_campoDAO, 
         				tbl_Tramite_UsuarioDAO,
         				tbl_Fase_UsuarioDAO,
-        				tbl_Campo_UsuarioDAO);
+        				tbl_Campo_UsuarioDAO,
+        				dao);
 
-
+        Utility.dao = jdbi;
+        Utility.usuarioDAO  = dao;
         
         //Registramos el primero recurso
         environment.jersey().register(userResource);

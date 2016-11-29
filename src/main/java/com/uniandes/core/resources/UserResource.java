@@ -8,7 +8,9 @@ import org.skife.jdbi.v2.Handle;
 import org.skife.jdbi.v2.ResultIterator;
 
 import com.uniandes.core.common.JWT_Utility;
+import com.uniandes.db.dao.Tbl_Tramite_UsuarioDAO;
 import com.uniandes.db.dao.UsuarioDAO;
+import com.uniandes.db.vo.Tbl_usuario;
 
 import io.dropwizard.hibernate.UnitOfWork;
 
@@ -34,6 +36,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -43,10 +47,12 @@ import java.util.Properties;
 public class UserResource {
 	private DBI generalDAO;
 	private UsuarioDAO usuarioDAO;
+	private Tbl_Tramite_UsuarioDAO tbl_Tramite_UsuarioDAO;
 
-	public UserResource(DBI generalDAO, UsuarioDAO usuarioDAO) {
+	public UserResource(DBI generalDAO, UsuarioDAO usuarioDAO, Tbl_Tramite_UsuarioDAO tbl_Tramite_UsuarioDAO ) {
 		this.generalDAO = generalDAO;
 		this.usuarioDAO = usuarioDAO;
+		this.tbl_Tramite_UsuarioDAO = tbl_Tramite_UsuarioDAO;
 	}
 
 	// Servicio para registrar el usuario
@@ -54,7 +60,7 @@ public class UserResource {
 	@Path("registerCitizen")
 	@UnitOfWork
 	// @Consumes(MediaType.APPLICATION_JSON)
-	public Response registerUser(String incomingData) throws JSONException, SQLException {
+	public Response registerCitizen(String incomingData) throws JSONException, SQLException {
 		// Json de entrada
 		JSONObject inPUT = new JSONObject(incomingData);
 		// Json de respuesta
@@ -72,8 +78,8 @@ public class UserResource {
 			String query = "SELECT * FROM tbl_usuario WHERE cedula = '" + cedula + "'";
 			ResultIterator tareasIterator = h.createQuery(query).iterator();
 			if (!tareasIterator.hasNext()) {
-				String query_insert = "INSERT INTO tbl_usuario (cedula, password, email, nombre, tipo) " + "values ('"
-						+ cedula + "','" + password + "','" + email + "', '" + nombre + "', '" + tipo + "')";
+				String query_insert = "INSERT INTO tbl_usuario (idusuario, cedula, password, email, nombre, tipo, telefono, estado) " + "values ('"
+						+ cedula + "','" + cedula + "','" + password + "','" + email + "', '" + nombre + "', '" + tipo + "','"+telefono +"',"+1+")";
 				if (h.createStatement(query_insert).execute() == 1) {
 					outPUT.put("status", "true");
 					outPUT.put("message", "El usuario se ha inscrito correctamente");
@@ -150,6 +156,7 @@ public class UserResource {
 		try {
 			String nombre = jsonUser.getString("name");
 			String cedula = jsonUser.getString("user_id");
+			String telefono = jsonUser.getString("telefono");
 			String email = jsonUser.getString("email");
 			String tipo = jsonUser.getString("tipo");
 			String password = jsonUser.getString("password");
@@ -158,8 +165,8 @@ public class UserResource {
 			query = "SELECT * FROM USUARIOS WHERE cedula = '" + cedula + "'";
 			ResultIterator tareasIterator = h.createQuery(query).iterator();
 			if (!tareasIterator.hasNext()) {
-				String query_insert = "INSERT INTO USUARIOS (cedula, password, email, nombre, tipo) " + "values ('"
-						+ cedula + "','" + password + "','" + email + "', '" + nombre + "', '" + tipo + "')";
+				String query_insert = "INSERT INTO USUARIOS (cedula, password, email, nombre, tipo, telefono) " + "values ('"
+						+ cedula + "','" + password + "','" + email + "', '" + nombre + "', '" + tipo + "', '" + telefono + "')";
 				if (h.createStatement(query_insert).execute() == 1) {
 					outPUT.put("status", "true");
 					outPUT.put("message", "El usuario se ha inscrito correctamente");
@@ -211,7 +218,7 @@ public class UserResource {
 			String cedula = body.getString("cedula");
 			// Obtenemos el password
 			String password = body.getString("password");
-			String query = "SELECT * FROM tbl_usuario WHERE cedula = '" + cedula + "' AND password = '" + password
+			String query = "SELECT * FROM tbl_usuario WHERE estado = 1 AND cedula = '" + cedula + "' AND password = '" + password
 					+ "'";
 			ResultIterator tareasIterator = h.createQuery(query).iterator();
 
@@ -295,7 +302,53 @@ public class UserResource {
 				jsonObject.put("cedula", rs.getString("cedula"));
 				jsonObject.put("email", rs.getString("email"));
 				jsonObject.put("nombre", rs.getString("nombre"));
-				jsonObject.put("idusuario", rs.getLong("idusuario"));
+				jsonObject.put("telefono", rs.getString("telefono"));
+				jsonObject.put("idusuario", rs.getString("idusuario"));
+				jsonArray.put(jsonObject);
+			}
+			// Rellenamos el output de salida
+			outPUT.put("usuarios", jsonArray);
+		} catch (Exception e) {
+			response = "" + outPUT;
+			outPUT.put("status", "error");
+			outPUT.put("errormessage", "Error trayendo los usuarios registrados");
+			outPUT.put("message", "Error trayendo los usuarios");
+			return Response.status(400).entity(response).build();
+		} finally {
+			h.close();
+		}
+		response = "" + outPUT;
+		return Response.status(200).entity(response).build();
+	}
+	
+	@GET
+	@Path("getRegisteredUsersByType/{tipo}")
+	public Response getRegisteredUsersByType(@PathParam("tipo") String tipo)
+			throws JSONException, SQLException, ParseException {
+		String response;
+		// Abrimos la conexion
+		Handle h = generalDAO.open();
+
+		// Json de salida
+		JSONObject outPUT = new JSONObject();
+		try {
+	
+			String query = "SELECT * FROM tbl_usuario ORDER BY nombre";
+			
+			query = "SELECT * FROM tbl_usuario where estado = 1 and tipo = '" + tipo + "'";
+			
+			Statement stmt = null;
+			stmt = h.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery(query);
+			JSONArray jsonArray = new JSONArray();
+			while (rs.next()) {
+				JSONObject jsonObject = new JSONObject();
+				jsonObject.put("cedula", rs.getString("cedula"));
+				jsonObject.put("email", rs.getString("email"));
+				jsonObject.put("nombre", rs.getString("nombre"));
+				jsonObject.put("telefono", rs.getString("telefono"));
+				jsonObject.put("password", rs.getString("password"));
+				jsonObject.put("idusuario", rs.getString("idusuario"));
 				jsonArray.put(jsonObject);
 			}
 			// Rellenamos el output de salida
@@ -355,12 +408,14 @@ public class UserResource {
 						return Response.status(500).entity(result).build();
 					}
 				} else {
-					String query_update = "update tbl_usuario set  cedula = ? , nombre = ? , email = ? where "
-							+ " idusuario = ?";
+					String query_update = "update tbl_usuario set  cedula = ? , " + "nombre = ?, " + "email = ?, "
+							 + "telefono = ? " + "where " + "cedula = ?";
 					PreparedStatement statement = h.getConnection().prepareStatement(query_update);
 					statement.setString(1, cedula);
 					statement.setString(2, nombre);
 					statement.setString(3, email);
+					statement.setString(4, telefono);
+					statement.setString(5, cedula);
 					if (statement.executeUpdate() != 1) {
 						outPUT.put("status", "false");
 						outPUT.put("message", "Ha ocurrido un error al actualizar el usuario");
@@ -600,5 +655,46 @@ public class UserResource {
 				h.close();
 			}
 		}
+	}
+
+	// Servicio para registrar el usuario
+	@POST
+	@Path("deleteUser")
+	@UnitOfWork
+	// @Consumes(MediaType.APPLICATION_JSON)
+	public Response deleteUser(String incomingData) throws JSONException, SQLException {
+		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("ddMMYYHHSS");
+		// Json de respuesta
+		// Json de entrada
+		JSONObject inPUT = new JSONObject(incomingData);
+		// Json de respuesta
+		JSONObject outPUT = new JSONObject();
+		try {
+			
+			
+			String idusuario = inPUT.getString("idusuario");
+			
+			//Borramos todas las solicitudes que tiene el usariu
+			tbl_Tramite_UsuarioDAO.deleteRequestProceduresByUserId(idusuario);
+			
+			Tbl_usuario tbl_usuario = usuarioDAO.findById(idusuario);
+			tbl_usuario.setCedula(tbl_usuario.getCedula()+dateFormat.format(new Date()));
+			usuarioDAO.updateUser(tbl_usuario);
+			usuarioDAO.updateIdUsuario(tbl_usuario.getIdusuario(), tbl_usuario.getCedula());
+			
+			
+			
+			outPUT.put("status", "true");
+			outPUT.put("message", "El usuario se ha sido eliminado exitosamente");
+		}catch(Exception e){
+			outPUT.put("status", "false");
+			outPUT.put("message", "Ha ocurrido un error al borrar el usuario");
+			String result = "" + outPUT;
+			return Response.status(500).entity(result).build();
+		}
+		
+		String result = "" + outPUT;
+		return Response.status(200).entity(result).build();
 	}
 }

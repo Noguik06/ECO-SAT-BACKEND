@@ -13,12 +13,15 @@ import javax.persistence.Table;
 @Table(name = "tbl_usuario")
 @NamedQueries(
 	    {
-	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_usuario.findByCedula", query = "SELECT U FROM Tbl_usuario U WHERE U.cedula = :cedula")
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_usuario.findByCedula", query = "SELECT U FROM Tbl_usuario U WHERE U.cedula = :cedula"),
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_usuario.deleteById", query = "UPDATE Tbl_usuario U SET U.cedula = U.cedula || 'eliminado', U.estado = 0 WHERE U.idusuario = :idusuario")
 	    }
 	)
 public class Tbl_usuario {
 	@Id
-	Long idusuario;
+	String idusuario;
+	
+	@Column(name="nombre")
 	String nombre;
 	
 	@Column(name = "cedula", nullable = false)
@@ -40,10 +43,11 @@ public class Tbl_usuario {
 	
 	@Column(name = "confirmpassword")
 	String confirmpassword;
-	public Long getIdusuario() {
+	
+	public String getIdusuario() {
 		return idusuario;
 	}
-	public void setIdusuario(Long idusuario) {
+	public void setIdusuario(String idusuario) {
 		this.idusuario = idusuario;
 	}
 	public String getNombre() {
@@ -101,22 +105,5 @@ public class Tbl_usuario {
 		this.confirmpassword = confirmpassword;
 	}
 	
-	@Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Tbl_usuario)) {
-            return false;
-        }
-
-        final Tbl_usuario that = (Tbl_usuario) o;
-
-        return Objects.equals(this.idusuario, that.idusuario);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(idusuario);
-    }
+	
 }

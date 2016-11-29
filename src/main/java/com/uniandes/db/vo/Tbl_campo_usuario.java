@@ -50,10 +50,8 @@ public class Tbl_campo_usuario implements Serializable{
 	@Column(name = "nombre")
 	private String nombre;
 	
-	@Lob
     @Column(name = "valorarchivo")
-	@Type(type="Byte[]")
-    private byte[] valorarchivo;
+    private String valorarchivo;
 
 	@Column(name="id_tramite_usuario")
 	private Long id_tramite_usuario;
@@ -97,12 +95,11 @@ public class Tbl_campo_usuario implements Serializable{
 		this.valortexto = valortexto;
 	}
 
-	@Column(name="valorarchivo",columnDefinition="BLOB")
-	public byte[] getValorarchivo() {
+	public String getValorarchivo() {
 		return valorarchivo;
 	}
 
-	public void setValorarchivo(byte[] valorarchivo) {
+	public void setValorarchivo(String valorarchivo) {
 		this.valorarchivo = valorarchivo;
 	}
 

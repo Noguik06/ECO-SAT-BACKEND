@@ -43,9 +43,8 @@ public class DownloadFileServlet extends HttpServlet{
 		try{
 			
 			String idarchivo = request.getParameter("idarchivo");
-			String query = "select archivo, nombre from archivos "
+			String query = "select archivo, nombre from tbl_archivo "
 					+ "where idarchivo = " + idarchivo;
-			
 			Handle h = Utility.dao.open();
 			Query<Map<String, Object>> object = h.createQuery(query);
 			if(object == null || object.first() == null || object.first().get("archivo") == null){

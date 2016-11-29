@@ -17,8 +17,12 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "tbl_tramite_usuario")
+@NamedQueries(
+	    {
+	    	@NamedQuery(name = "com.uniandes.db.vo.Tbl_tramite_usuario.findAll", query = "SELECT T FROM Tbl_tramite_usuario T  ORDER BY T.estado, T.nombre")
+	    }
+	)
 public class Tbl_tramite_usuario implements Serializable{
-	
 	/**
 	 * 
 	 */
@@ -33,16 +37,16 @@ public class Tbl_tramite_usuario implements Serializable{
 	
 	//llave foranea usuario propietario del tramite
 	@Column(name = "id_usuario_ciudadano")
-	private Long id_usuario_ciudadano;
+	private String id_usuario_ciudadano;
 
 	//llave foranea usuario funcionario asignado al tramite
 	@Column(name = "id_usuario_funcionario")
-	private Long id_usuario_funcionario;
+	private String id_usuario_funcionario;
 	
 	
 	//0 - activo  1 - cerrado
-	@Column(name = "estadoactivo")
-	private Boolean estadoactivo;
+	@Column(name = "estado")
+	private int estado;
 	
 	@Column(name = "fecha")
     @Temporal(TemporalType.TIMESTAMP)
@@ -71,28 +75,28 @@ public class Tbl_tramite_usuario implements Serializable{
 		this.id_tramite = id_tramite;
 	}
 
-	public Long getId_usuario_ciudadano() {
+	public String getId_usuario_ciudadano() {
 		return id_usuario_ciudadano;
 	}
 
-	public void setId_usuario_ciudadano(Long id_usuario_ciudadano) {
+	public void setId_usuario_ciudadano(String id_usuario_ciudadano) {
 		this.id_usuario_ciudadano = id_usuario_ciudadano;
 	}
 
-	public Long getId_usuario_funcionario() {
+	public String getId_usuario_funcionario() {
 		return id_usuario_funcionario;
 	}
 
-	public void setId_usuario_funcionario(Long id_usuario_funcionario) {
+	public void setId_usuario_funcionario(String id_usuario_funcionario) {
 		this.id_usuario_funcionario = id_usuario_funcionario;
 	}
 
-	public Boolean getEstadoactivo() {
-		return estadoactivo;
+	public int getEstado() {
+		return estado;
 	}
 
-	public void setEstadoactivo(Boolean estadoactivo) {
-		this.estadoactivo = estadoactivo;
+	public void setEstado(int estadoactivo) {
+		this.estado = estadoactivo;
 	}
 
 	public Date getFecha() {

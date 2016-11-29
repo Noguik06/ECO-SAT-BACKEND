@@ -9,6 +9,7 @@ import com.uniandes.db.vo.Tbl_fase_usuario;
 
 import io.dropwizard.hibernate.AbstractDAO;
 
+@SuppressWarnings(value = { "all" })
 public class Tbl_Campo_UsuarioDAO extends AbstractDAO<Tbl_campo_usuario> {
 
 	public Tbl_Campo_UsuarioDAO(SessionFactory sessionFactory) {
@@ -46,6 +47,8 @@ public class Tbl_Campo_UsuarioDAO extends AbstractDAO<Tbl_campo_usuario> {
 		List<Tbl_campo_usuario> list = (List<Tbl_campo_usuario>) currentSession().
 				getNamedQuery("com.uniandes.db.vo.Tbl_campo_usuario.findAllByIdTramiteUsuario")
 				.setParameter("id_tramite_usuario", id_tramite_usuario).list();
+//		List<Tbl_campo_usuario> list  = currentSession().createQuery("SELECT T.id_campo FROM Tbl_campo_usuario T "
+//	    			+ "WHERE T.id_tramite_usuario = " + id_tramite_usuario).list();
 		return list;
 	}
 }
